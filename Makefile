@@ -15,7 +15,10 @@ build:
 clean:
 	@rm -rf *.exe build dpi
 
-risc_v_tests: build
+sub/RISC-V-TESTS/Makefile:
+	@git submodule update --init --recursive
+
+risc_v_tests: build sub/RISC-V-TESTS/Makefile
 	@cd ./sub/RISC-V-TESTS/; make all
 	@rm -rf build/risc_v_tests
 	@cp -r ./sub/RISC-V-TESTS/build build/risc_v_tests
@@ -24,8 +27,16 @@ risc_v_tests: build
 # SPECIFIC
 ####################################################################################################
 
-build/risc_v_tests/addi.s/addi.s.hex: risc_v_tests
+build/risc_v_tests/addi.s/addi.s.hex:
+	@make -s risc_v_tests
 
 .PHONY: build_byte_read_test
 build_byte_read_test: build build/risc_v_tests/addi.s/addi.s.hex
 	@gcc -I./src test/byte_read_test.c -o build/byte_read_test.exe
+
+####################################################################################################
+# CI
+####################################################################################################
+
+CI:
+	@make -s run TEST=byte_read

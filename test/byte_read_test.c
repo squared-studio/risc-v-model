@@ -4,7 +4,7 @@
 
 #define CHECK(__NUM__)                                                                              \
     if (mem[addr] != hex2int(#__NUM__)) {                                                           \
-        OK=0;                                                                                       \
+        error++;                                                                                    \
         printf("ADDR:0x%08x EXP:0x%08x GOT:0x%08x\n", addr, hex2int(#__NUM__), mem[addr]);          \
     }                                                                                               \
     addr++;                                                                                         \
@@ -17,7 +17,7 @@ int main() {
 
     read_intel_hex("build/risc_v_tests/addi.s/addi.s.hex", mem);
 
-    int OK = 1;
+    int error = 0;
     int addr = 0;
 
     CHECK(13) CHECK(00) CHECK(10) CHECK(00) CHECK(93) CHECK(00) CHECK(10) CHECK(00) CHECK(13) CHECK(81) CHECK(10) CHECK(00) CHECK(93) CHECK(01) CHECK(11) CHECK(00)
@@ -37,9 +37,9 @@ int main() {
     CHECK(13) CHECK(83) CHECK(03) CHECK(00) CHECK(93) CHECK(02) CHECK(03) CHECK(00) CHECK(13) CHECK(82) CHECK(02) CHECK(00) CHECK(93) CHECK(01) CHECK(02) CHECK(00)
     CHECK(13) CHECK(81) CHECK(01) CHECK(00) CHECK(93) CHECK(00) CHECK(01) CHECK(00) CHECK(13) CHECK(80) CHECK(00) CHECK(00)
 
-    if (OK) printf("PASSED..!\n");
-    else printf("FAILED..!\n");
+    if (error) printf("FAILED..!\n");
+    else printf("PASSED..!\n");
 
-    return 0;
+    return error;
 
 }
