@@ -2,6 +2,7 @@
 # GENERIC
 ####################################################################################################
 
+.PHONY: run
 run: build_${TEST}_test
 	@build/${TEST}_test.exe
 
@@ -12,6 +13,7 @@ build_${TEST}_test: build
 build:
 	@mkdir -p build
 
+.PHONY: clean
 clean:
 	@rm -rf *.exe build dpi
 
