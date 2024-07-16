@@ -4,12 +4,16 @@
 #include "stdint.h"
 
 typedef struct {
-  char*    func;
-  uint32_t rd    :5;
-  uint32_t rs1   :5;
-  uint32_t rs2   :5;
-  uint32_t rs3   :5;
+  char*    func     ;
+  uint32_t rd    :5 ;
+  uint32_t rs1   :5 ;
+  uint32_t rs2   :5 ;
+  uint32_t rs3   :5 ;
   uint32_t imm   :32;
+  uint32_t shamt :5 ;
+  uint32_t succ  :4 ;
+  uint32_t pred  :4 ;
+  uint32_t fm    :4 ;
 } decoded_instr_t;
 
 #endif

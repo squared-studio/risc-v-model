@@ -40,3 +40,4 @@ build_byte_read_test: build build/risc_v_tests/addi.s/addi.s.hex
 
 CI:
 	@make -s run TEST=byte_read
+	@make -s run TEST=decoder
