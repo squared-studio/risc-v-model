@@ -1,4 +1,8 @@
 ___*
+*.a
 *.exe
-build/
-dpi/
+*.jou
+*.log
+*.pb
+build
+xsim.dir

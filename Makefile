@@ -1,3 +1,11 @@
+CLEAN_TARGETS += *.a
+CLEAN_TARGETS += *.exe
+CLEAN_TARGETS += *.jou
+CLEAN_TARGETS += *.log
+CLEAN_TARGETS += *.pb
+CLEAN_TARGETS += build
+CLEAN_TARGETS += xsim.dir
+
 ####################################################################################################
 # GENERIC
 ####################################################################################################
@@ -15,7 +23,7 @@ build:
 
 .PHONY: clean
 clean:
-	@rm -rf *.exe build dpi
+	@rm -rf ${CLEAN_TARGETS}
 
 sub/RISC-V-TESTS/Makefile:
 	@git submodule update --init --recursive
@@ -42,6 +50,14 @@ build/risc_v_tests/console_print.s/console_print.s.hex:
 .PHONY: build_decoder_test
 build_decoder_test: build build/risc_v_tests/console_print.s/console_print.s.hex
 	@gcc -I./src test/decoder_test.c -o build/decoder_test.exe
+
+####################################################################################################
+# DPI
+####################################################################################################
+
+.PHONT: dpi
+dpi:
+	@xsc ./src/decoder.c -o model.a
 
 ####################################################################################################
 # CI
