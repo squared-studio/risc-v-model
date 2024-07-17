@@ -1,20 +1,27 @@
 #include "typedef.h"
 #include "decoder.c"
 #include "stdio.h"
+#include "stdint.h"
 
-#define TEST(__VALUE__)                                                 \
-  instr = decode(__VALUE__);                                            \
-  printf("RD:%02d RS1:%02d RS2:%02d RS3:%02d IMM:0x%08x FUNC:%s\n",     \
-    instr.rd, instr.rs1, instr.rs2, instr.rs3, instr.imm, instr.func);  \
-
+uint8_t mem [] = {};
 
 int main () {
 
-  decoded_instr_t instr;
+  for (int i = 0; i < 160; i++) mem[i] = 0;
+  read_intel_hex("build/risc_v_tests/console_print.s/console_print.s.hex", mem);
 
-  TEST(0xABCDE637); // RD:12 IMM:0xabcde000 FUNC:LUI
-  TEST(0xABCDE617); // RD:12 IMM:0xabcde000 FUNC:AUIPC
-  TEST(0xC56237EF); // RD:15 IMM:0xfff23456 FUNC:JAL
-  TEST(0x12308567); // RD:10 RS1:01 IMM:0x00000123 FUNC:JALR
+  uint32_t code;
+  decoded_instr_t instr;
+  for (int i = 0; i < 40; i++) {
+    code = 0;
+    code = code | mem[4*i+3]; code = code << 8;
+    code = code | mem[4*i+2]; code = code << 8;
+    code = code | mem[4*i+1]; code = code << 8;
+    code = code | mem[4*i+0];
+    instr = decode(code);
+    printf("0x%08x %s\n", code, instr.func);
+  }
+
+  return 0;
 
 }

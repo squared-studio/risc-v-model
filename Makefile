@@ -21,7 +21,7 @@ sub/RISC-V-TESTS/Makefile:
 	@git submodule update --init --recursive
 
 risc_v_tests: build sub/RISC-V-TESTS/Makefile
-	@cd ./sub/RISC-V-TESTS/; make all
+	@cd ./sub/RISC-V-TESTS/; make all INST_BASE=0000000000000000 DATA_BASE=0000000000001000
 	@rm -rf build/risc_v_tests
 	@cp -r ./sub/RISC-V-TESTS/build build/risc_v_tests
 
@@ -35,6 +35,13 @@ build/risc_v_tests/addi.s/addi.s.hex:
 .PHONY: build_byte_read_test
 build_byte_read_test: build build/risc_v_tests/addi.s/addi.s.hex
 	@gcc -I./src test/byte_read_test.c -o build/byte_read_test.exe
+	
+build/risc_v_tests/console_print.s/console_print.s.hex:
+	@make -s risc_v_tests
+
+.PHONY: build_decoder_test
+build_decoder_test: build build/risc_v_tests/console_print.s/console_print.s.hex
+	@gcc -I./src test/decoder_test.c -o build/decoder_test.exe
 
 ####################################################################################################
 # CI

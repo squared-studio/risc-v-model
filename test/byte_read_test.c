@@ -9,12 +9,11 @@
     }                                                                                               \
     addr++;                                                                                         \
 
+uint8_t mem [] = {};
 
 int main() {
 
-    uint8_t mem [1000];
     for (int i = 0; i < 1000; i++) mem[i] = 0;
-
     read_intel_hex("build/risc_v_tests/addi.s/addi.s.hex", mem);
 
     int error = 0;
