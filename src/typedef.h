@@ -15,7 +15,6 @@ typedef struct {
   uint32_t pred  :4 ;
   uint32_t fm    :4 ;
   uint32_t csr   :12;
-  uint32_t uimm  :32;
   uint32_t rl    :1 ;
   uint32_t aq    :1 ;
   uint32_t rm    :3 ;

@@ -63,7 +63,7 @@ decoded_instr_t decode (uint32_t code) {
   result.pred  = bit_select(code, 27, 24);
   result.fm    = bit_select(code, 31, 28);
   result.csr   = bit_select(code, 31, 20);
-  result.uimm  = bit_select(code, 19, 15);
+  result.imm   = bit_select(code, 19, 15);
 
 
 
