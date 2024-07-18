@@ -2,6 +2,9 @@
 #include "stdio.h"
 #include "general.c"
 
+#ifndef DECODER_C__
+#define DECODER_C__
+
 #define B_TYPE(__FUNC__)                                 \
   result.func = #__FUNC__;                               \
   int temp = 0;                                          \
@@ -505,3 +508,5 @@ decoded_instr_t decode (uint32_t code) {
   return result;
 
 }
+
+#endif

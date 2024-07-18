@@ -33,6 +33,10 @@ risc_v_tests: build sub/RISC-V-TESTS/Makefile
 	@rm -rf build/risc_v_tests
 	@cp -r ./sub/RISC-V-TESTS/build build/risc_v_tests
 
+.PHONT: dpi
+dpi:
+	@xsc ./src/risc_v_model.c -o risc_v_model.a
+
 ####################################################################################################
 # SPECIFIC
 ####################################################################################################
@@ -50,14 +54,6 @@ build/risc_v_tests/console_print.s/console_print.s.hex:
 .PHONY: build_decoder_test
 build_decoder_test: build build/risc_v_tests/console_print.s/console_print.s.hex
 	@gcc -I./src test/decoder_test.c -o build/decoder_test.exe
-
-####################################################################################################
-# DPI
-####################################################################################################
-
-.PHONT: dpi
-dpi:
-	@xsc ./src/decoder.c -o model.a
 
 ####################################################################################################
 # CI

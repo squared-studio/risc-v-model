@@ -1,5 +1,8 @@
 #include "stdio.h"
 
+#ifndef GENERAL_C__
+#define GENERAL_C__
+
 int sign_ext (uint32_t num, uint32_t len) {
   int result;
   result = num >> (len - 1);
@@ -61,3 +64,5 @@ uint32_t read_intel_hex(char* filename, uint8_t mem_array[]) {
     fclose(ptr);
     return 0;
 }
+
+#endif
