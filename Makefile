@@ -20,7 +20,7 @@ run: build_${TEST}_test
 
 .PHONY: build_${TEST}_test
 build_${TEST}_test: build
-	@gcc -I./src test/${TEST}_test.c -o build/${TEST}_test.exe
+	@g++ -I./src test/${TEST}_test.c -o build/${TEST}_test.exe
 
 build:
 	@mkdir -p build
@@ -43,7 +43,7 @@ risc_v_tests: build sub/RISC-V-TESTS/Makefile
 
 .PHONT: dpi
 dpi:
-	@xsc ./src/risc_v_model.c -o risc_v_model.a
+	@xsc ./src/risc_v_model.cc -o risc_v_model.a
 
 ####################################################################################################
 # SPECIFIC
@@ -54,14 +54,14 @@ build/risc_v_tests/addi.s/addi.s.hex:
 
 .PHONY: build_byte_read_test
 build_byte_read_test: build build/risc_v_tests/addi.s/addi.s.hex
-	@gcc -I./src test/byte_read_test.c -o build/byte_read_test.exe
+	@g++ -I./src test/byte_read_test.c -o build/byte_read_test.exe
 	
 build/risc_v_tests/console_print.s/console_print.s.hex:
 	@make -s risc_v_tests
 
 .PHONY: build_decoder_test
 build_decoder_test: build build/risc_v_tests/console_print.s/console_print.s.hex
-	@gcc -I./src test/decoder_test.c -o build/decoder_test.exe
+	@g++ -I./src test/decoder_test.c -o build/decoder_test.exe
 
 ####################################################################################################
 # CI

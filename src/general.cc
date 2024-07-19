@@ -25,7 +25,7 @@ uint32_t bit_select (uint32_t num, uint32_t end, uint32_t start) {
   return snum & mask;
 }
 
-uint32_t hex2int (char *hex) {
+uint32_t hex2int (const char *hex) {
     uint32_t val = 0;
     while (*hex) {
         uint8_t byte = *hex++;
@@ -40,7 +40,7 @@ uint32_t hex2int (char *hex) {
     return val;
 }
 
-uint32_t read_intel_hex (char* filename, uint8_t mem_array[]) {
+uint32_t read_intel_hex (const char *filename, uint8_t mem_array[]) {
     FILE* ptr = fopen(filename, "r");
     if (ptr == NULL) {
         printf("No such file.\n");
@@ -85,6 +85,7 @@ char to_hex_char (uint64_t data, int nibble) {
     if (tmp ==  2) return '2';
     if (tmp ==  1) return '1';
     if (tmp ==  0) return '0';
+    return '0';
 }
 
 #define FILE_NAME_GENERAL_C__                           \
@@ -106,19 +107,20 @@ char to_hex_char (uint64_t data, int nibble) {
 
 uint32_t load_cache (uint64_t addr, uint8_t mem_array[]) {
     FILE_NAME_GENERAL_C__
-
     FILE* ptr = fopen(filename, "r");
     if (ptr == NULL) {
+        printf("%s NOT FOUND\n", filename);
         for (int i = 0; i < (1024*1024); i++) {
             mem_array[i] = 0;
         }
-    }
-    uint32_t offset = 0;
-    char ch;
-    for (int i = 0; i < (1024*1024); i++) {
-        ch = fgetc(ptr);
-        mem_array[offset] = ch;
-        offset++;
+    } else {
+        uint32_t offset = 0;
+        char ch;
+        for (int i = 0; i < (1024*1024); i++) {
+            ch = fgetc(ptr);
+            mem_array[offset] = ch;
+            offset++;
+        }
     }
     fclose(ptr);
     return 0;
@@ -126,7 +128,6 @@ uint32_t load_cache (uint64_t addr, uint8_t mem_array[]) {
 
 uint32_t store_cache (uint64_t addr, uint8_t mem_array[]) {
     FILE_NAME_GENERAL_C__
-
     FILE* ptr = fopen(filename, "w");
     for (int i = 0; i < (1024*1024); i++) {
         fprintf(ptr, "%c", mem_array[i]);

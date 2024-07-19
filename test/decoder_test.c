@@ -1,16 +1,14 @@
 #include "typedef.h"
-#include "decoder.c"
+#include "decoder.cc"
 #include "stdio.h"
 #include "stdint.h"
 
 uint8_t mem [160];
 
-char ref[40][10] = {
-  "AUIPC", "ADDI", "ADDI", "ECALL", "JAL", "ADDI", "ADDI", "ADDI", "JAL",
-  "JAL", "LUI", "ADDIW", "ADDI", "ECALL", "JAL", "ADDI", "ADDI", "ADDI",
-  "JAL", "JAL", "AUIPC", "ADDI", "ADDI", "ECALL", "JALR", "ADDI", "ADDI",
-  "ADDI", "ADDI", "ECALL", "ADDI", "AUIPC", "ADDI", "ECALL", "ADDI", "BGE",
-  "JALR", "ADDI", "ECALL", "INVALID"
+func_t ref[40] = {
+  AUIPC, ADDI, ADDI, ECALL, JAL, ADDI, ADDI, ADDI, JAL, JAL, LUI, ADDIW, ADDI, ECALL, JAL, ADDI,
+  ADDI, ADDI, JAL, JAL, AUIPC, ADDI, ADDI, ECALL, JALR, ADDI, ADDI, ADDI, ADDI, ECALL, ADDI, AUIPC,
+  ADDI, ECALL, ADDI, BGE, JALR, ADDI, ECALL, INVALID
 };
 
 int main () {
@@ -29,13 +27,13 @@ int main () {
     code = code | mem[4*i+1]; code = code << 8;
     code = code | mem[4*i+0];
     instr = decode(code);
-    printf("0x%08x %s\n", code, instr.func);
 
-    for (int j = 0; ref[i][j]!='\0'; j++) {
-      if (instr.func[j] != ref[i][j]) error++;
-    }
+    if (instr.func != ref[i]) error++;
 
   }
+
+  if (error) printf("\033[1;31mFAILED..!\033[0m\n");
+  else printf("\033[1;32mPASSED..!\033[0m\n");
 
   return error;
 

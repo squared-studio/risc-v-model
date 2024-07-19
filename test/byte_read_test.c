@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include "stdint.h"
-#include "general.c"
+#include "general.cc"
 
 #define CHECK(__NUM__)                                                                              \
     if (mem[addr] != hex2int(#__NUM__)) {                                                           \
@@ -36,8 +36,8 @@ int main() {
     CHECK(13) CHECK(83) CHECK(03) CHECK(00) CHECK(93) CHECK(02) CHECK(03) CHECK(00) CHECK(13) CHECK(82) CHECK(02) CHECK(00) CHECK(93) CHECK(01) CHECK(02) CHECK(00)
     CHECK(13) CHECK(81) CHECK(01) CHECK(00) CHECK(93) CHECK(00) CHECK(01) CHECK(00) CHECK(13) CHECK(80) CHECK(00) CHECK(00)
 
-    if (error) printf("FAILED..!\n");
-    else printf("PASSED..!\n");
+    if (error) printf("\033[1;31mFAILED..!\033[0m\n");
+    else printf("\033[1;32mPASSED..!\033[0m\n");
 
     return error;
 

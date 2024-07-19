@@ -1,12 +1,12 @@
 #include "typedef.h"
 #include "stdio.h"
-#include "general.c"
+#include "general.cc"
 
 #ifndef DECODER_C__
 #define DECODER_C__
 
 #define B_TYPE(__FUNC__)                                 \
-  result.func = #__FUNC__;                               \
+  result.func = __FUNC__;                                \
   int temp = 0;                                          \
   temp = temp | (bit_select(code,  7,  7) << 11);        \
   temp = temp | (bit_select(code, 11,  8) <<  1);        \
@@ -16,12 +16,12 @@
 
 
 #define I_TYPE(__FUNC__)                                 \
-  result.func  = #__FUNC__;                              \
+  result.func  = __FUNC__;                               \
   result.imm   = sign_ext(bit_select(code, 31, 20), 12); \
 
 
 #define J_TYPE(__FUNC__)                                 \
-  result.func = #__FUNC__;                               \
+  result.func = __FUNC__;                                \
   int temp = 0;                                          \
   temp = temp | (bit_select(code, 19, 12) << 12);        \
   temp = temp | (bit_select(code, 20, 20) << 11);        \
@@ -31,7 +31,7 @@
 
 
 #define R_TYPE(__FUNC__)                                 \
-  result.func = #__FUNC__;                               \
+  result.func = __FUNC__;                                \
   int temp = 0;                                          \
   temp = temp | (bit_select(code, 11,  7) << 0);         \
   temp = temp | (bit_select(code, 31, 25) << 5);         \
@@ -39,21 +39,21 @@
   
 
 #define R4_TYPE(__FUNC__)                                \
-  result.func = #__FUNC__;                               \
+  result.func = __FUNC__;                                \
 
 
 #define S_TYPE(__FUNC__)                                 \
-  result.func = #__FUNC__;                               \
+  result.func = __FUNC__;                                \
 
 
 #define U_TYPE(__FUNC__)                                 \
-  result.func = #__FUNC__;                               \
+  result.func = __FUNC__;                                \
   result.imm  = sign_ext(code & 0xFFFFF000, 32);         \
 
 
 decoded_instr_t decode (uint32_t code) {
   decoded_instr_t result;
-  result.func  = "INVALID";
+  result.func  = INVALID;
   result.rd    = bit_select(code, 11, 7);
   result.rs1   = bit_select(code, 19, 15);
   result.rs2   = bit_select(code, 24, 20);
