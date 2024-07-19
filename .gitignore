@@ -4,5 +4,6 @@ ___*
 *.jou
 *.log
 *.pb
+*.ram
 build
 xsim.dir

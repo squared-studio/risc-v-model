@@ -1,3 +1,7 @@
+####################################################################################################
+# DIRECTIVES
+####################################################################################################
+
 CLEAN_TARGETS += *.a
 CLEAN_TARGETS += *.exe
 CLEAN_TARGETS += *.jou
@@ -24,6 +28,10 @@ build:
 .PHONY: clean
 clean:
 	@rm -rf ${CLEAN_TARGETS}
+	
+.PHONY: RAM_CLEAR
+RAM_CLEAR:
+	@rm -rf *.ram
 
 sub/RISC-V-TESTS/Makefile:
 	@git submodule update --init --recursive

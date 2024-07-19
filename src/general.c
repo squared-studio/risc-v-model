@@ -25,7 +25,7 @@ uint32_t bit_select (uint32_t num, uint32_t end, uint32_t start) {
   return snum & mask;
 }
 
-uint32_t hex2int(char *hex) {
+uint32_t hex2int (char *hex) {
     uint32_t val = 0;
     while (*hex) {
         uint8_t byte = *hex++;
@@ -40,7 +40,7 @@ uint32_t hex2int(char *hex) {
     return val;
 }
 
-uint32_t read_intel_hex(char* filename, uint8_t mem_array[]) {
+uint32_t read_intel_hex (char* filename, uint8_t mem_array[]) {
     FILE* ptr = fopen(filename, "r");
     if (ptr == NULL) {
         printf("No such file.\n");
@@ -61,6 +61,76 @@ uint32_t read_intel_hex(char* filename, uint8_t mem_array[]) {
         }
     }
 
+    fclose(ptr);
+    return 0;
+}
+
+char to_hex_char (uint64_t data, int nibble) {
+    uint64_t tmp;
+    tmp = data >> (4*nibble);
+    tmp = tmp & 0xF;
+    if (tmp == 15) return 'F';
+    if (tmp == 14) return 'E';
+    if (tmp == 13) return 'D';
+    if (tmp == 12) return 'C';
+    if (tmp == 11) return 'B';
+    if (tmp == 10) return 'A';
+    if (tmp ==  9) return '9';
+    if (tmp ==  8) return '8';
+    if (tmp ==  7) return '7';
+    if (tmp ==  6) return '6';
+    if (tmp ==  5) return '5';
+    if (tmp ==  4) return '4';
+    if (tmp ==  3) return '3';
+    if (tmp ==  2) return '2';
+    if (tmp ==  1) return '1';
+    if (tmp ==  0) return '0';
+}
+
+#define FILE_NAME_GENERAL_C__                           \
+    char filename [50]="./";                            \
+    for (int i = 0; i < 11; i++) {                      \
+        filename[2+i] = to_hex_char(addr, 15-i);        \
+    }                                                   \
+    filename[13] = '0';                                 \
+    filename[14] = '0';                                 \
+    filename[15] = '0';                                 \
+    filename[16] = '0';                                 \
+    filename[17] = '0';                                 \
+    filename[18] = '.';                                 \
+    filename[19] = 'r';                                 \
+    filename[20] = 'a';                                 \
+    filename[21] = 'm';                                 \
+    filename[22] = '\0';                                \
+
+
+uint32_t load_cache (uint64_t addr, uint8_t mem_array[]) {
+    FILE_NAME_GENERAL_C__
+
+    FILE* ptr = fopen(filename, "r");
+    if (ptr == NULL) {
+        for (int i = 0; i < (1024*1024); i++) {
+            mem_array[i] = 0;
+        }
+    }
+    uint32_t offset = 0;
+    char ch;
+    for (int i = 0; i < (1024*1024); i++) {
+        ch = fgetc(ptr);
+        mem_array[offset] = ch;
+        offset++;
+    }
+    fclose(ptr);
+    return 0;
+}
+
+uint32_t store_cache (uint64_t addr, uint8_t mem_array[]) {
+    FILE_NAME_GENERAL_C__
+
+    FILE* ptr = fopen(filename, "w");
+    for (int i = 0; i < (1024*1024); i++) {
+        fprintf(ptr, "%c", mem_array[i]);
+    }
     fclose(ptr);
     return 0;
 }
