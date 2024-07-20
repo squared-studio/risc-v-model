@@ -1,5 +1,5 @@
 #include "typedef.h"
-#include "decoder.cc"
+#include "decoder.c"
 #include "stdio.h"
 #include "stdint.h"
 

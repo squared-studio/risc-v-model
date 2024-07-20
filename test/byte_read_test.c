@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include "stdint.h"
-#include "general.cc"
+#include "general.c"
 
 #define CHECK(__NUM__)                                                                              \
     if (mem[addr] != hex2int(#__NUM__)) {                                                           \

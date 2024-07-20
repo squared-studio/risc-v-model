@@ -1,6 +1,6 @@
 #include "typedef.h"
 #include "stdio.h"
-#include "general.cc"
+#include "general.c"
 
 #ifndef DECODER_C__
 #define DECODER_C__

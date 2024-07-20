@@ -43,7 +43,6 @@ uint32_t hex2int (const char *hex) {
 uint32_t read_intel_hex (const char *filename, uint8_t mem_array[]) {
     FILE* ptr = fopen(filename, "r");
     if (ptr == NULL) {
-        printf("No such file.\n");
         return 1;
     }
 
