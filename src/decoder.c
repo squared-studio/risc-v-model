@@ -32,10 +32,6 @@
 
 #define R_TYPE(__FUNC__)                                 \
   result.func = __FUNC__;                                \
-  int temp = 0;                                          \
-  temp = temp | (bit_select(code, 11,  7) << 0);         \
-  temp = temp | (bit_select(code, 31, 25) << 5);         \
-  result.imm  = sign_ext(temp, 12);                      \
   
 
 #define R4_TYPE(__FUNC__)                                \
@@ -44,6 +40,10 @@
 
 #define S_TYPE(__FUNC__)                                 \
   result.func = __FUNC__;                                \
+  int temp = 0;                                          \
+  temp = temp | (bit_select(code, 11,  7) << 0);         \
+  temp = temp | (bit_select(code, 31, 25) << 5);         \
+  result.imm  = sign_ext(temp, 12);                      \
 
 
 #define U_TYPE(__FUNC__)                                 \
@@ -274,7 +274,7 @@ decoded_instr_t decode (uint32_t code) {
   //          88     `8b        `888'       Y8,     a88  d8"          88
   //          88      `8b        `8'         "Y888888P'  88888888888  88
 
-  if ((code & 0x0000707F) == 0x00002007) { R_TYPE(FLW);       }
+  if ((code & 0x0000707F) == 0x00002007) { I_TYPE(FLW);       }
   if ((code & 0x0000707F) == 0x00002027) { S_TYPE(FSW);       }
   if ((code & 0x0600007F) == 0x00000043) { R4_TYPE(FMADD_S);  }
   if ((code & 0x0600007F) == 0x00000047) { R4_TYPE(FMSUB_S);  }
@@ -328,7 +328,7 @@ decoded_instr_t decode (uint32_t code) {
   //          88     `8b        `888'       Y8,     a88  d8"          88      .a8P
   //          88      `8b        `8'         "Y888888P'  88888888888  88888888Y"'
 
-  if ((code & 0x0000707F) == 0x00003007) { R_TYPE(FLD);       }
+  if ((code & 0x0000707F) == 0x00003007) { I_TYPE(FLD);       }
   if ((code & 0x0000707F) == 0x00003027) { S_TYPE(FSD);       }
   if ((code & 0x0600007F) == 0x02000043) { R4_TYPE(FMADD_D);  }
   if ((code & 0x0600007F) == 0x02000047) { R4_TYPE(FMSUB_D);  }
@@ -384,7 +384,7 @@ decoded_instr_t decode (uint32_t code) {
   //          88     `8b        `888'       Y8,     a88  d8"           Y8a.    Y88P
   //          88      `8b        `8'         "Y888888P'  88888888888    `"Y8888Y"Y8a
 
-  if ((code & 0x0000707F) == 0x00004007) { R_TYPE(FLQ);       }
+  if ((code & 0x0000707F) == 0x00004007) { I_TYPE(FLQ);       }
   if ((code & 0x0000707F) == 0x00004027) { S_TYPE(FSQ);       }
   if ((code & 0x0600007F) == 0x06000043) { R4_TYPE(FMADD_Q);  }
   if ((code & 0x0600007F) == 0x06000047) { R4_TYPE(FMSUB_Q);  }
@@ -440,7 +440,7 @@ decoded_instr_t decode (uint32_t code) {
   //          88     `8b        `888'       Y8,     a88  d8"          88"           88     88       88
   //          88      `8b        `8'         "Y888888P'  88888888888  888888888888  88     88       88
 
-  if ((code & 0x0000707F) == 0x00001007) { R_TYPE(FLH);       }
+  if ((code & 0x0000707F) == 0x00001007) { I_TYPE(FLH);       }
   if ((code & 0x0000707F) == 0x00001027) { S_TYPE(FSH);       }
   if ((code & 0x0600007F) == 0x04000043) { R4_TYPE(FMADD_H);  }
   if ((code & 0x0600007F) == 0x04000047) { R4_TYPE(FMSUB_H);  }
