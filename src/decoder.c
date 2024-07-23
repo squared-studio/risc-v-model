@@ -143,7 +143,7 @@ decoded_instr_t decode (uint32_t code) {
   if ((code & 0xFE00707F) == 0x0000101B) { I_TYPE(SLLIW);     }
   if ((code & 0xFE00707F) == 0x0000501B) { I_TYPE(SRLIW);     }
   if ((code & 0xFE00707F) == 0x4000501B) { I_TYPE(SRAIW);     }
-  if ((code & 0xFE00707F) == 0x0000003B) { R_TYPE(ANDW);      }
+  if ((code & 0xFE00707F) == 0x0000003B) { R_TYPE(ADDW);      }
   if ((code & 0xFE00707F) == 0x4000003B) { R_TYPE(SUBW);      }
   if ((code & 0xFE00707F) == 0x0000103B) { R_TYPE(SLLW);      }
   if ((code & 0xFE00707F) == 0x0000503B) { R_TYPE(SRLW);      }
