@@ -1,0 +1,3 @@
+[submodule "sub/risc-v-tests"]
+	path = sub/risc-v-tests
+	url = https://github.com/squared-studio/risc-v-tests.git
