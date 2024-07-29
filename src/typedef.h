@@ -26,12 +26,12 @@ typedef enum {
 } func_t;
 
 typedef struct {
-  uint32_t rd    :5 ;
-  uint32_t rs1   :5 ;
-  uint32_t rs2   :5 ;
-  uint32_t rs3   :5 ;
+  uint32_t rd    :6 ;
+  uint32_t rs1   :6 ;
+  uint32_t rs2   :6 ;
+  uint32_t rs3   :6 ;
   uint32_t imm   :32;
-  uint32_t shamt :5 ;
+  uint32_t shamt :6 ;
   uint32_t succ  :4 ;
   uint32_t pred  :4 ;
   uint32_t fm    :4 ;
