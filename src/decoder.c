@@ -154,8 +154,8 @@ decoded_instr_t decode (uint32_t code) {
   if ((code & 0xFE00707F) == 0x0200503B) { op.func = DIVUW;     op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x0200603B) { op.func = REMW;      op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x0200703B) { op.func = REMUW;     op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF9F0707F) == 0x1000202F) { op.func = LR_W;      op.imm =    0;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x1800202F) { op.func = SC_W;      op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF9F0707F) == 0x1000202F) { op.func = LR_W;      op.imm = timm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x1800202F) { op.func = SC_W;      op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
   if ((code & 0xF800707F) == 0x0800202F) { op.func = AMOSWAP_W; op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
   if ((code & 0xF800707F) == 0x0000202F) { op.func = AMOADD_W;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
   if ((code & 0xF800707F) == 0x2000202F) { op.func = AMOXOR_W;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
