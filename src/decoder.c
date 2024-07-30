@@ -26,7 +26,10 @@ decoded_instr_t decode (uint32_t code) {
   temp = temp | (bit_select(code, 31, 31) << 12);
   bimm = sign_ext(temp, 13);
 
-  cimm = bit_select(code, 19, 15);
+  temp = 0;
+  temp = temp | (bit_select(code, 19, 15) << 12);
+  temp = temp | (bit_select(code, 31, 20) << 0);
+  cimm = temp;
   
   iimm = sign_ext(bit_select(code, 31, 20), 12);
   
