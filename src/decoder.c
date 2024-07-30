@@ -12,12 +12,15 @@
 decoded_instr_t decode (uint32_t code) {
 
   uint32_t temp;
-  uint32_t bimm;
-  uint32_t cimm;
-  uint32_t iimm;
-  uint32_t jimm;
-  uint32_t simm;
-  uint32_t uimm;
+  uint32_t aimm; // Shift amount
+  uint32_t bimm; // B-type instr immediate
+  uint32_t cimm; // CSR instr {immediate:6,CSR:12}
+  uint32_t iimm; // I-type instr immediate
+  uint32_t jimm; // J-type instr immediate
+  uint32_t simm; // S-type instr immediate
+  uint32_t uimm; // U-type instr immediate
+
+  aimm = bit_select(code, 25, 20);
 
   temp = 0;
   temp = temp | (bit_select(code,  7,  7) << 11);
@@ -30,23 +33,23 @@ decoded_instr_t decode (uint32_t code) {
   temp = temp | (bit_select(code, 19, 15) << 12);
   temp = temp | (bit_select(code, 31, 20) << 0);
   cimm = temp;
-  
+
   iimm = sign_ext(bit_select(code, 31, 20), 12);
-  
+
   temp = 0;
   temp = temp | (bit_select(code, 19, 12) << 12);
   temp = temp | (bit_select(code, 20, 20) << 11);
   temp = temp | (bit_select(code, 30, 21) <<  1);
   temp = temp | (bit_select(code, 31, 31) << 20);
   jimm = sign_ext(temp, 21);
-  
+
   temp = 0;
   temp = temp | (bit_select(code, 11,  7) << 0);
   temp = temp | (bit_select(code, 31, 25) << 5);
   simm  = sign_ext(temp, 12);
-  
+
   uimm = sign_ext(code & 0xFFFFF000, 32);
-  
+
   decoded_instr_t op;
   op.func  = INVALID;
   op.rd    = bit_select(code, 11, 7);
@@ -56,8 +59,6 @@ decoded_instr_t decode (uint32_t code) {
   op.rl    = bit_select(code, 25, 25);
   op.aq    = bit_select(code, 26, 26);
   op.rm    = bit_select(code, 14, 12);
-  op.shamt = bit_select(code, 25, 20);
-  op.csr   = bit_select(code, 31, 20);
 
   // 0 none
   // 1 int
@@ -112,13 +113,13 @@ decoded_instr_t decode (uint32_t code) {
   if ((code & 0x0000707F) == 0x00006003) { op.func = LWU;       op.imm = iimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0x0000707F) == 0x00003003) { op.func = LD;        op.imm = iimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0x0000707F) == 0x00003023) { op.func = SD;        op.imm = simm;      rd = ___;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xFC00707F) == 0x00001013) { op.func = SLLI;      op.imm = iimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFC00707F) == 0x00005013) { op.func = SRLI;      op.imm = iimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFC00707F) == 0x40005013) { op.func = SRAI;      op.imm = iimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFC00707F) == 0x00001013) { op.func = SLLI;      op.imm = aimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFC00707F) == 0x00005013) { op.func = SRLI;      op.imm = aimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFC00707F) == 0x40005013) { op.func = SRAI;      op.imm = aimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0x0000707F) == 0x0000001B) { op.func = ADDIW;     op.imm = iimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFE00707F) == 0x0000101B) { op.func = SLLIW;     op.imm = iimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFE00707F) == 0x0000501B) { op.func = SRLIW;     op.imm = iimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFE00707F) == 0x4000501B) { op.func = SRAIW;     op.imm = iimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFE00707F) == 0x0000101B) { op.func = SLLIW;     op.imm = aimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFE00707F) == 0x0000501B) { op.func = SRLIW;     op.imm = aimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFE00707F) == 0x4000501B) { op.func = SRAIW;     op.imm = aimm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x0000003B) { op.func = ADDW;      op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x4000003B) { op.func = SUBW;      op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x0000103B) { op.func = SLLW;      op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
