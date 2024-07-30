@@ -17,10 +17,10 @@ decoded_instr_t decode (uint32_t code) {
   uint32_t cimm; // CSR instr {immediate:6,CSR:12}
   uint32_t iimm; // I-type instr immediate
   uint32_t jimm; // J-type instr immediate
-  uint32_t simm; // S-type instr immediate
-  uint32_t uimm; // U-type instr immediate
-  uint32_t timm; // atomic instr
   uint32_t rimm; // round mode float instr
+  uint32_t simm; // S-type instr immediate
+  uint32_t timm; // atomic instr
+  uint32_t uimm; // U-type instr immediate
 
   aimm = bit_select(code, 25, 20);
 
