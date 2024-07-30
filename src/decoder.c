@@ -19,6 +19,8 @@ decoded_instr_t decode (uint32_t code) {
   uint32_t jimm; // J-type instr immediate
   uint32_t simm; // S-type instr immediate
   uint32_t uimm; // U-type instr immediate
+  uint32_t timm; // atomic instr
+  uint32_t rimm; // round mode float instr
 
   aimm = bit_select(code, 25, 20);
 
@@ -43,10 +45,17 @@ decoded_instr_t decode (uint32_t code) {
   temp = temp | (bit_select(code, 31, 31) << 20);
   jimm = sign_ext(temp, 21);
 
+  rimm = bit_select(code, 14, 12);
+
   temp = 0;
   temp = temp | (bit_select(code, 11,  7) << 0);
   temp = temp | (bit_select(code, 31, 25) << 5);
   simm  = sign_ext(temp, 12);
+
+  temp = 0;
+  temp = temp | (bit_select(code, 25, 25) << 0);  // rl bit
+  temp = temp | (bit_select(code, 26, 26) << 1);  // aq bit
+  timm = temp;  // {aq,rl}
 
   uimm = sign_ext(code & 0xFFFFF000, 32);
 
@@ -147,156 +156,156 @@ decoded_instr_t decode (uint32_t code) {
   if ((code & 0xFE00707F) == 0x0200703B) { op.func = REMUW;     op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
   if ((code & 0xF9F0707F) == 0x1000202F) { op.func = LR_W;      op.imm =    0;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0xF800707F) == 0x1800202F) { op.func = SC_W;      op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x0800202F) { op.func = AMOSWAP_W; op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x0000202F) { op.func = AMOADD_W;  op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x2000202F) { op.func = AMOXOR_W;  op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x6000202F) { op.func = AMOAND_W;  op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x4000202F) { op.func = AMOOR_W;   op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x8000202F) { op.func = AMOMIN_W;  op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0xA000202F) { op.func = AMOMAX_W;  op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0xC000202F) { op.func = AMOMINU_W; op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0xE000202F) { op.func = AMOMAXU_W; op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF9F0707F) == 0x1000302F) { op.func = LR_D;      op.imm =    0;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x1800302F) { op.func = SC_D;      op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x0800302F) { op.func = AMOSWAP_D; op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x0000302F) { op.func = AMOADD_D;  op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x2000302F) { op.func = AMOXOR_D;  op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x6000302F) { op.func = AMOAND_D;  op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x4000302F) { op.func = AMOOR_D;   op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0x8000302F) { op.func = AMOMIN_D;  op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0xA000302F) { op.func = AMOMAX_D;  op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0xC000302F) { op.func = AMOMINU_D; op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
-  if ((code & 0xF800707F) == 0xE000302F) { op.func = AMOMAXU_D; op.imm =    0;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x0800202F) { op.func = AMOSWAP_W; op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x0000202F) { op.func = AMOADD_W;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x2000202F) { op.func = AMOXOR_W;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x6000202F) { op.func = AMOAND_W;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x4000202F) { op.func = AMOOR_W;   op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x8000202F) { op.func = AMOMIN_W;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0xA000202F) { op.func = AMOMAX_W;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0xC000202F) { op.func = AMOMINU_W; op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0xE000202F) { op.func = AMOMAXU_W; op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF9F0707F) == 0x1000302F) { op.func = LR_D;      op.imm = timm;      rd = INT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x1800302F) { op.func = SC_D;      op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x0800302F) { op.func = AMOSWAP_D; op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x0000302F) { op.func = AMOADD_D;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x2000302F) { op.func = AMOXOR_D;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x6000302F) { op.func = AMOAND_D;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x4000302F) { op.func = AMOOR_D;   op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0x8000302F) { op.func = AMOMIN_D;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0xA000302F) { op.func = AMOMAX_D;  op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0xC000302F) { op.func = AMOMINU_D; op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
+  if ((code & 0xF800707F) == 0xE000302F) { op.func = AMOMAXU_D; op.imm = timm;      rd = INT;     r1 = INT;     r2 = INT;     r3 = ___;}
   if ((code & 0x0000707F) == 0x00002007) { op.func = FLW;       op.imm = iimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0x0000707F) == 0x00002027) { op.func = FSW;       op.imm = simm;      rd = ___;     r1 = INT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0x0600007F) == 0x00000043) { op.func = FMADD_S;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x00000047) { op.func = FMSUB_S;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x0000004B) { op.func = FNMSUB_S;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x0000004F) { op.func = FNMADD_S;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0xFE00007F) == 0x00000053) { op.func = FADD_S;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x08000053) { op.func = FSUB_S;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x10000053) { op.func = FMUL_S;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x18000053) { op.func = FDIV_S;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x58000053) { op.func = FSQRT_S;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0x0600007F) == 0x00000043) { op.func = FMADD_S;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x00000047) { op.func = FMSUB_S;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x0000004B) { op.func = FNMSUB_S;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x0000004F) { op.func = FNMADD_S;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0xFE00007F) == 0x00000053) { op.func = FADD_S;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x08000053) { op.func = FSUB_S;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x10000053) { op.func = FMUL_S;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x18000053) { op.func = FDIV_S;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x58000053) { op.func = FSQRT_S;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x20000053) { op.func = FSGNJ_S;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x20001053) { op.func = FSGNJN_S;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x20002053) { op.func = FSGNJX_S;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x28000053) { op.func = FMIN_S;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x28001053) { op.func = FMAX_S;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC0000053) { op.func = FCVT_W_S;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC0100053) { op.func = FCVT_WU_S; op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC0000053) { op.func = FCVT_W_S;  op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC0100053) { op.func = FCVT_WU_S; op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFFF0707F) == 0xE0000053) { op.func = FMV_X_W;   op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA0002053) { op.func = FEQ_S;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA0001053) { op.func = FLT_S;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA0000053) { op.func = FLE_S;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFFF0707F) == 0xE0001053) { op.func = FCLASS_S;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD0000053) { op.func = FCVT_S_W;  op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD0100053) { op.func = FCVT_S_WU; op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD0000053) { op.func = FCVT_S_W;  op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD0100053) { op.func = FCVT_S_WU; op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFFF0707F) == 0xF0000053) { op.func = FMV_W_X;   op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC0200053) { op.func = FCVT_L_S;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC0300053) { op.func = FCVT_LU_S; op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD0200053) { op.func = FCVT_S_L;  op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD0300053) { op.func = FCVT_S_LU; op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC0200053) { op.func = FCVT_L_S;  op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC0300053) { op.func = FCVT_LU_S; op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD0200053) { op.func = FCVT_S_L;  op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD0300053) { op.func = FCVT_S_LU; op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0x0000707F) == 0x00003007) { op.func = FLD;       op.imm = iimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0x0000707F) == 0x00003027) { op.func = FSD;       op.imm = simm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0x0600007F) == 0x02000043) { op.func = FMADD_D;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x02000047) { op.func = FMSUB_D;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x0200004B) { op.func = FNMSUB_D;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x0200004F) { op.func = FNMADD_D;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0xFE00007F) == 0x02000053) { op.func = FADD_D;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x0A000053) { op.func = FSUB_D;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x12000053) { op.func = FMUL_D;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x1A000053) { op.func = FDIV_D;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x5A000053) { op.func = FSQRT_D;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0x0600007F) == 0x02000043) { op.func = FMADD_D;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x02000047) { op.func = FMSUB_D;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x0200004B) { op.func = FNMSUB_D;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x0200004F) { op.func = FNMADD_D;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0xFE00007F) == 0x02000053) { op.func = FADD_D;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x0A000053) { op.func = FSUB_D;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x12000053) { op.func = FMUL_D;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x1A000053) { op.func = FDIV_D;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x5A000053) { op.func = FSQRT_D;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x22000053) { op.func = FSGNJ_D;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x22001053) { op.func = FSGNJN_D;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x22002053) { op.func = FSGNJX_D;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x2A000053) { op.func = FMIN_D;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x2A001053) { op.func = FMAX_D;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x40100053) { op.func = FCVT_S_D;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x42000053) { op.func = FCVT_D_S;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x40100053) { op.func = FCVT_S_D;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x42000053) { op.func = FCVT_D_S;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA2002053) { op.func = FEQ_D;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA2001053) { op.func = FLT_D;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA2000053) { op.func = FLE_D;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFFF0707F) == 0xE2001053) { op.func = FCLASS_D;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC2000053) { op.func = FCVT_W_D;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC2100053) { op.func = FCVT_WU_D; op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD2000053) { op.func = FCVT_D_W;  op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD2100053) { op.func = FCVT_D_WU; op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC2200053) { op.func = FCVT_L_D;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC2300053) { op.func = FCVT_LU_D; op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC2000053) { op.func = FCVT_W_D;  op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC2100053) { op.func = FCVT_WU_D; op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD2000053) { op.func = FCVT_D_W;  op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD2100053) { op.func = FCVT_D_WU; op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC2200053) { op.func = FCVT_L_D;  op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC2300053) { op.func = FCVT_LU_D; op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFFF0707F) == 0xE2000053) { op.func = FMV_X_D;   op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD2200053) { op.func = FCVT_D_L;  op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD2300053) { op.func = FCVT_D_LU; op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD2200053) { op.func = FCVT_D_L;  op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD2300053) { op.func = FCVT_D_LU; op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFFF0707F) == 0xF2000053) { op.func = FMV_D_X;   op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0x0000707F) == 0x00004007) { op.func = FLQ;       op.imm = iimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0x0000707F) == 0x00004027) { op.func = FSQ;       op.imm = simm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0x0600007F) == 0x06000043) { op.func = FMADD_Q;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x06000047) { op.func = FMSUB_Q;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x0600004B) { op.func = FNMSUB_Q;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x0600004F) { op.func = FNMADD_Q;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0xFE00007F) == 0x06000053) { op.func = FADD_Q;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x0E000053) { op.func = FSUB_Q;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x16000053) { op.func = FMUL_Q;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x1E000053) { op.func = FDIV_Q;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x5E000053) { op.func = FSQRT_Q;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0x0600007F) == 0x06000043) { op.func = FMADD_Q;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x06000047) { op.func = FMSUB_Q;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x0600004B) { op.func = FNMSUB_Q;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x0600004F) { op.func = FNMADD_Q;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0xFE00007F) == 0x06000053) { op.func = FADD_Q;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x0E000053) { op.func = FSUB_Q;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x16000053) { op.func = FMUL_Q;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x1E000053) { op.func = FDIV_Q;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x5E000053) { op.func = FSQRT_Q;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x26000053) { op.func = FSGNJ_Q;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x26001053) { op.func = FSGNJN_Q;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x26002053) { op.func = FSGNJX_Q;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x2E000053) { op.func = FMIN_Q;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x2E001053) { op.func = FMAX_Q;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x40300053) { op.func = FCVT_S_Q;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x46000053) { op.func = FCVT_Q_S;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x42300053) { op.func = FCVT_D_Q;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x46100053) { op.func = FCVT_Q_D;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x40300053) { op.func = FCVT_S_Q;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x46000053) { op.func = FCVT_Q_S;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x42300053) { op.func = FCVT_D_Q;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x46100053) { op.func = FCVT_Q_D;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA6002053) { op.func = FEQ_Q;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA6001053) { op.func = FLT_Q;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA6000053) { op.func = FLE_Q;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFFF0707F) == 0xE6001053) { op.func = FCLASS_Q;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC6000053) { op.func = FCVT_W_Q;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC6100053) { op.func = FCVT_WU_Q; op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD6000053) { op.func = FCVT_Q_W;  op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD6100053) { op.func = FCVT_Q_WU; op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC6200053) { op.func = FCVT_L_Q;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC6300053) { op.func = FCVT_LU_Q; op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD6200053) { op.func = FCVT_Q_L;  op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD6300053) { op.func = FCVT_Q_LU; op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC6000053) { op.func = FCVT_W_Q;  op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC6100053) { op.func = FCVT_WU_Q; op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD6000053) { op.func = FCVT_Q_W;  op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD6100053) { op.func = FCVT_Q_WU; op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC6200053) { op.func = FCVT_L_Q;  op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC6300053) { op.func = FCVT_LU_Q; op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD6200053) { op.func = FCVT_Q_L;  op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD6300053) { op.func = FCVT_Q_LU; op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0x0000707F) == 0x00001007) { op.func = FLH;       op.imm = iimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0x0000707F) == 0x00001027) { op.func = FSH;       op.imm = simm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0x0600007F) == 0x04000043) { op.func = FMADD_H;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x04000047) { op.func = FMSUB_H;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x0400004B) { op.func = FNMSUB_H;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0x0600007F) == 0x0400004F) { op.func = FNMADD_H;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
-  if ((code & 0xFE00007F) == 0x04000053) { op.func = FADD_H;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x0C000053) { op.func = FSUB_H;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x14000053) { op.func = FMUL_H;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFE00007F) == 0x1C000053) { op.func = FDIV_H;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x5C000053) { op.func = FSQRT_H;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0x0600007F) == 0x04000043) { op.func = FMADD_H;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x04000047) { op.func = FMSUB_H;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x0400004B) { op.func = FNMSUB_H;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0x0600007F) == 0x0400004F) { op.func = FNMADD_H;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = FLT;}
+  if ((code & 0xFE00007F) == 0x04000053) { op.func = FADD_H;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x0C000053) { op.func = FSUB_H;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x14000053) { op.func = FMUL_H;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFE00007F) == 0x1C000053) { op.func = FDIV_H;    op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x5C000053) { op.func = FSQRT_H;   op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x24000053) { op.func = FSGNJ_H;   op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x24001053) { op.func = FSGNJN_H;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x24002053) { op.func = FSGNJX_H;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x2C000053) { op.func = FMIN_H;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
   if ((code & 0xFE00707F) == 0x2C001053) { op.func = FMAX_H;    op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = FLT;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x40200053) { op.func = FCVT_S_H;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x44000053) { op.func = FCVT_H_S;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x42200053) { op.func = FCVT_D_H;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x44100053) { op.func = FCVT_H_D;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x46200053) { op.func = FCVT_Q_H;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0x44300053) { op.func = FCVT_H_Q;  op.imm =    0;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x40200053) { op.func = FCVT_S_H;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x44000053) { op.func = FCVT_H_S;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x42200053) { op.func = FCVT_D_H;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x44100053) { op.func = FCVT_H_D;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x46200053) { op.func = FCVT_Q_H;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0x44300053) { op.func = FCVT_H_Q;  op.imm = rimm;      rd = FLT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA4002053) { op.func = FEQ_H;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA4001053) { op.func = FLT_H;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFE00707F) == 0xA4000053) { op.func = FLE_H;     op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFFF0707F) == 0xE4001053) { op.func = FCLASS_H;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC4000053) { op.func = FCVT_W_H;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC4100053) { op.func = FCVT_WU_H; op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC4000053) { op.func = FCVT_W_H;  op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC4100053) { op.func = FCVT_WU_H; op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFFF0707F) == 0xE4000053) { op.func = FMV_X_H;   op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD4000053) { op.func = FCVT_H_W;  op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD4100053) { op.func = FCVT_H_WU; op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD4000053) { op.func = FCVT_H_W;  op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD4100053) { op.func = FCVT_H_WU; op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFFF0707F) == 0xF4000053) { op.func = FMV_H_X;   op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC4200053) { op.func = FCVT_L_H;  op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xC4300053) { op.func = FCVT_LU_H; op.imm =    0;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD4200053) { op.func = FCVT_H_L;  op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
-  if ((code & 0xFFF0007F) == 0xD4300053) { op.func = FCVT_H_LU; op.imm =    0;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC4200053) { op.func = FCVT_L_H;  op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xC4300053) { op.func = FCVT_LU_H; op.imm = rimm;      rd = INT;     r1 = FLT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD4200053) { op.func = FCVT_H_L;  op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
+  if ((code & 0xFFF0007F) == 0xD4300053) { op.func = FCVT_H_LU; op.imm = rimm;      rd = FLT;     r1 = INT;     r2 = ___;     r3 = ___;}
   if ((code & 0xFFFFFFFF) == 0x00D00073) { op.func = WRS_NTO;   op.imm = iimm;      rd = ___;     r1 = ___;     r2 = ___;     r3 = ___;}
   if ((code & 0xFFFFFFFF) == 0x01D00073) { op.func = WRS_STO;   op.imm = iimm;      rd = ___;     r1 = ___;     r2 = ___;     r3 = ___;}
 
