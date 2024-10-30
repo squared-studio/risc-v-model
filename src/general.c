@@ -47,7 +47,7 @@ uint32_t read_intel_hex (const char *filename, uint8_t mem_array[]) {
     }
 
     uint32_t addr;
-    char buf[64];
+    char buf[128];
     while (fscanf(ptr, "%s", buf) == 1) {
         if (buf[0]=='@') {
             for (int i = 0; buf[i] != '\0'; i++){
